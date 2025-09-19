@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IoT Dashboard</title>
+
+    <link rel="stylesheet" href="assets/style/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/style/sweetalert2.min.css" />
+
+    <style>
+      .tab-pane {
+        margin-left: 0 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-12 text-center bg-primary text-light">
+          <h1>IoT Dashboard</h1>
+        </div>
+      </div>
+      <div class="row">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#home"
+              >Home</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#menu1">Menu 1</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#menu2">Menu 2</a>
+          </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div class="tab-pane container active" id="home">
+            <p id="p-info">Loading...</p>
+          </div>
+          <div class="tab-pane container fade" id="menu1">Menu 1</div>
+          <div class="tab-pane container fade" id="menu2">Menu 2</div>
+        </div>
+        <!-- <div class="col-sm-2">col1</div>
+        <div class="col-sm-6">
+          <button type="button" class="btn">Basic</button>
+          <button type="button" class="btn btn-outline-primary">Primary</button>
+          <button type="button" class="btn btn-secondary">Secondary</button>
+          <button type="button" class="btn btn-success">Success</button>
+          <button type="button" class="btn btn-info">Info</button>
+          <button type="button" class="btn btn-warning">Warning</button>
+          <button type="button" class="btn btn-danger">Danger</button>
+          <button type="button" class="btn btn-dark">Dark</button>
+          <button type="button" class="btn btn-light">Light</button>
+          <button type="button" class="btn btn-link">Link</button>
+        </div>
+        <div class="col-sm-4">col3</div> -->
+      </div>
+    </div>
+
+    <script src="assets/scripts/bootstrap.bundle.min.js"></script>
+    <script src="assets/scripts/jquery-3.7.1.min.js"></script>
+    <script src="assets/scripts/sweetalert2.all.min.js"></script>
+    <script src="assets/scripts/reconnecting-websocket.min.js"></script>
+
+    <script>
+      let api_url =
+        "https://api.open-meteo.com/v1/forecast?latitude=-2.953997&longitude=104.747730&current_weather=true&hourly=temperature_2m,relativehumidity_2m,windspeed_10m";
+      let api_url2 =
+        "https://api.open-meteo.com/v1/forecast?latitude=-2.962787900041617&longitude=104.74005281925203&current_weather=true&timezone=Asia/Bangkok";
+
+      let ws_obj = new ReconnectingWebSocket("wss://echo.websocket.org");
+      // console.log(ws_obj);
+
+      $(document).ready(function () {
+        // alert("DOM READY");
+        // Swal.fire("SweetAlert2 is working!");
+        // Swal.fire({
+        //   title: "The Internet?",
+        //   text: "That thing is still around?",
+        //   icon: "question",
+        // });
+
+        $("#p-info").html("Loading at " + new Date());
+        setInterval(() => {
+          $("#p-info").html("Loading at " + new Date());
+          $.get(api_url2, function (data) {
+            // console.log(data);
+
+            // console.log(data.current_weather);
+
+            let cuaca_sekarang = data.current_weather;
+            let satuan = data.current_weather_units;
+
+            $("#p-info").html(
+              "Waktu = " +
+                new Date() +
+                "<br>Suhu = " +
+                cuaca_sekarang.temperature +
+                satuan.temperature
+            );
+          }).fail(function () {
+            $("#p-info").html("Gagal mengambil data, cek koneksi Anda!");
+          });
+        }, 60000);
+      });
+
+      if (ws_obj) {
+        ws_obj.onopen = function () {
+          console.log("Websocket opened");
+        };
+
+        ws_obj.onmessage = function (event_ws) {
+          console.log(event_ws);
+        };
+      }
+    </script>
+  </body>
+</html>
